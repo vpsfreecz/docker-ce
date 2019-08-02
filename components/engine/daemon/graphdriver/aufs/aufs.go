@@ -179,7 +179,10 @@ func supportsAufs() error {
 	exec.Command("modprobe", "aufs").Run()
 
 	if rsystem.RunningInUserNS() {
-		return ErrAufsNested
+		_, err := os.Stat("/proc/self/ns/syslog")
+		if os.IsNotExist(err) {
+			return ErrAufsNested
+		}
 	}
 
 	f, err := os.Open("/proc/filesystems")
